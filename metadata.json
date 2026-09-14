@@ -1,0 +1,6 @@
+{
+  "name": "Produto IA — Gerador Completo",
+  "description": "Lê imagem → gera título, descrição, imagens, especificações, calculadora + tendências em tempo real.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

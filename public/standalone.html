@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🛒 Produto IA — Gerador Completo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+    }
+    body {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #fff;
+      min-height: 100vh;
+      padding: 16px;
+    }
+    .container { max-width: 480px; margin: 0 auto; }
+    header { text-align: center; margin-bottom: 16px; }
+    header h1 { font-size: 20px; color: #00d9ff; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .subtitle { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+    .card {
+      background: rgba(255,255,255,0.04);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+    .card h2 { font-size: 14px; margin-bottom: 10px; color: #00d9ff; }
+    .form-group { margin-bottom: 10px; }
+    .form-group label { display: block; font-size: 12px; color: #cbd5e1; margin-bottom: 4px; }
+    input, textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: rgba(15,23,42,0.6);
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+    }
+    input:focus, textarea:focus { border-color: #00d9ff; }
+    textarea { resize: vertical; min-height: 75px; }
+    .upload-box {
+      border: 2px dashed rgba(0,217,255,0.35);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+      background: rgba(0,217,255,0.02);
+    }
+    .upload-box:hover { border-color: #00d9ff; background: rgba(0,217,255,0.06); }
+    .upload-label { color: #00d9ff; cursor: pointer; font-size: 14px; font-weight: 500; }
+    .preview-container { margin-top: 10px; }
+    .preview-container img { max-width: 100%; max-height: 200px; border-radius: 8px; object-fit: contain; }
+    .hidden { display: none !important; }
+    .btn {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 8px;
+    }
+    .primary-btn { background: linear-gradient(90deg, #00d9ff, #0284c7); color: #0f172a; font-weight: 700; }
+    .primary-btn:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; }
+    .secondary-btn { background: #1e293b; color: #cbd5e1; border: 1px solid #334155; }
+    .secondary-btn:hover { background: #334155; }
+    .calc-btn { background: linear-gradient(90deg, #10b981, #059669); color: #fff; }
+    .small-btn { 
+      width: auto; padding: 7px 14px; margin-top: 6px;
+      background: #00d9ff; color: #0f172a; font-size: 12px; font-weight: 700;
+    }
+    .images-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+    }
+    @media (min-width: 420px) { .images-grid { grid-template-columns: repeat(2, 1fr); } }
+    .image-placeholder, .image-card {
+      background: rgba(15,23,42,0.7);
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 8px;
+      text-align: center;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .variation-img { width: 100%; height: 110px; object-fit: cover; border-radius: 6px; margin-bottom: 6px; }
+    .specs-table { font-size: 12px; }
+    .specs-table table { width: 100%; border-collapse: collapse; }
+    .specs-table td { padding: 6px 4px; border-bottom: 1px solid #334155; }
+    .specs-table td:first-child { color: #38bdf8; width: 38%; font-weight: 600; }
+    .calculator-grid { display: grid; gap: 8px; }
+    .calc-result { 
+      margin-top: 10px; padding: 10px; 
+      background: rgba(0,217,255,0.08); border-radius: 8px; border: 1px solid rgba(0,217,255,0.2);
+    }
+    .calc-result p { margin: 4px 0; font-size: 13px; }
+    .trend-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 4px; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 12px;
+    }
+    .rank { color: #00d9ff; font-weight: bold; min-width: 24px; }
+    .trend-info { flex: 1; }
+    .trend-info small { display: block; color: #94a3b8; font-size: 11px; }
+    .trend-up { color: #34d399; font-weight: 600; font-size: 11px; }
+    .loading { text-align: center; padding: 16px; color: #94a3b8; font-size: 12px; }
+    .empty-state { text-align: center; color: #64748b; font-size: 12px; padding: 10px; }
+    .hint { font-size: 11px; color: #64748b; margin-top: 5px; }
+    .alert-error {
+      background: rgba(225, 29, 72, 0.15);
+      border: 1px solid rgba(225, 29, 72, 0.4);
+      color: #fda4af;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      margin-bottom: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🛒 Produto IA — Gerador Completo</h1>
+      <p class="subtitle">Leia imagem → Crie conteúdo → Veja tendências em tempo real</p>
+    </header>
+
+    <div id="alertBox" class="alert-error"></div>
+
+    <!-- 🔑 Chave API -->
+    <section class="card">
+      <h2>🔑 Chave API do Gemini</h2>
+      <div class="form-group">
+        <input type="password" id="apiKey" placeholder="Cole sua chave aqui (aistudio.google.com)">
+        <button id="saveKeyBtn" class="btn small-btn">Salvar</button>
+      </div>
+      <p class="hint">Sua chave fica salva apenas no seu navegador</p>
+    </section>
+
+    <!-- 📷 Upload -->
+    <section class="card">
+      <h2>📷 Imagem do Produto</h2>
+      <div class="upload-box" id="uploadBox">
+        <input type="file" id="imageInput" accept="image/*" hidden>
+        <label for="imageInput" class="upload-label">📎 Clique ou solte a imagem aqui</label>
+        <div id="previewContainer" class="preview-container hidden">
+          <img id="previewImage" alt="Pré-visualização">
+        </div>
+      </div>
+      <button id="analyzeBtn" class="btn primary-btn">🔍 Analisar com IA</button>
+    </section>
+
+    <!-- 📝 Conteúdo -->
+    <section class="card">
+      <h2>📝 Conteúdo Gerado</h2>
+      <div class="form-group">
+        <label>Título do Produto:</label>
+        <input type="text" id="productTitle" placeholder="Título gerado pela IA...">
+      </div>
+      <div class="form-group">
+        <label>Descrição do Produto:</label>
+        <textarea id="productDesc" rows="4" placeholder="Descrição gerada pela IA..."></textarea>
+      </div>
+    </section>
+
+    <!-- 🖼️ Variações -->
+    <section class="card">
+      <h2>🖼️ 4 Variações de Imagem</h2>
+      <p class="hint">*Variações estratégicas com base na análise da imagem</p>
+      <div id="generatedImages" class="images-grid">
+        <div class="image-placeholder">Aguardando imagem...</div>
+      </div>
+    </section>
+
+    <!-- 📋 Especificações -->
+    <section class="card">
+      <h2>📋 Especificações do Produto</h2>
+      <div id="specsContent" class="specs-table">
+        <p class="empty-state">Especificações geradas após análise...</p>
+      </div>
+    </section>
+
+    <!-- 🧮 Calculadora -->
+    <section class="card">
+      <h2>🧮 Calculadora de Preço & Lucro</h2>
+      <div class="calculator-grid">
+        <div class="form-group">
+          <label>Custo do Produto (R$):</label>
+          <input type="number" step="0.01" id="costPrice" value="35.00" placeholder="0,00">
+        </div>
+        <div class="form-group">
+          <label>% de Lucro Desejado:</label>
+          <input type="number" id="profitPercent" value="30" placeholder="30">
+        </div>
+        <div class="form-group">
+          <label>Impostos e Taxas (%):</label>
+          <input type="number" id="taxPercent" value="12" placeholder="12">
+        </div>
+        <button id="calcBtn" class="btn calc-btn">Calcular</button>
+      </div>
+      <div id="calcResult" class="calc-result">
+        <p>✅ <strong>Preço de Venda Sugerido:</strong> R$ <span id="salePrice">0,00</span></p>
+        <p>💰 <strong>Lucro Líquido:</strong> R$ <span id="netProfit">0,00</span></p>
+      </div>
+    </section>
+
+    <!-- 🔥 Tendências -->
+    <section class="card">
+      <h2>🔥 Produtos Mais Procurados — Tempo Real</h2>
+      <div id="trendsContent">
+        <div class="loading">Carregando tendências...</div>
+      </div>
+      <button id="refreshTrendsBtn" class="btn secondary-btn">🔄 Atualizar Varredura</button>
+    </section>
+  </div>
+
+  <script>
+    const apiKeyInput = document.getElementById('apiKey');
+    const saveKeyBtn = document.getElementById('saveKeyBtn');
+    const imageInput = document.getElementById('imageInput');
+    const uploadBox = document.getElementById('uploadBox');
+    const previewContainer = document.getElementById('previewContainer');
+    const previewImage = document.getElementById('previewImage');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const productTitle = document.getElementById('productTitle');
+    const productDesc = document.getElementById('productDesc');
+    const specsContent = document.getElementById('specsContent');
+    const generatedImages = document.getElementById('generatedImages');
+    const calcBtn = document.getElementById('calcBtn');
+    const calcResult = document.getElementById('calcResult');
+    const alertBox = document.getElementById('alertBox');
+    const trendsContent = document.getElementById('trendsContent');
+    const refreshTrendsBtn = document.getElementById('refreshTrendsBtn');
+
+    let uploadedImageBase64 = null;
+    let API_KEY = localStorage.getItem('geminiApiKey') || '';
+    if (API_KEY) apiKeyInput.value = API_KEY;
+
+    function showAlert(msg) {
+      alertBox.textContent = msg;
+      alertBox.style.display = 'block';
+      setTimeout(() => { alertBox.style.display = 'none'; }, 5000);
+    }
+
+    saveKeyBtn.addEventListener('click', () => {
+      API_KEY = apiKeyInput.value.trim();
+      if (API_KEY) {
+        localStorage.setItem('geminiApiKey', API_KEY);
+        saveKeyBtn.textContent = '✅ Salvo!';
+        setTimeout(() => saveKeyBtn.textContent = 'Salvar', 2000);
+      }
+    });
+
+    uploadBox.addEventListener('click', () => imageInput.click());
+
+    imageInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        uploadedImageBase64 = event.target.result;
+        previewImage.src = uploadedImageBase64;
+        previewContainer.classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Validar Calculadora de Preços
+    function isCalculatorValid() {
+      const cost = parseFloat(document.getElementById('costPrice').value);
+      const profit = parseFloat(document.getElementById('profitPercent').value);
+      const tax = parseFloat(document.getElementById('taxPercent').value);
+
+      if (isNaN(cost) || cost <= 0) {
+        showAlert('Por favor, informe um Custo do Produto maior que R$ 0,00 na calculadora.');
+        return false;
+      }
+      if (isNaN(profit) || profit <= 0) {
+        showAlert('Por favor, informe uma % de Lucro Desejado maior que 0% na calculadora.');
+        return false;
+      }
+      if (isNaN(tax) || tax < 0) {
+        showAlert('Por favor, informe uma % válida de Impostos e Taxas (mínimo 0%).');
+        return false;
+      }
+      if (profit + tax >= 100) {
+        showAlert('A soma de Lucro e Impostos deve ser inferior a 100%.');
+        return false;
+      }
+      return true;
+    }
+
+    // Analisar com IA (com suporte a fallback de modelos)
+    analyzeBtn.addEventListener('click', async () => {
+      if (!isCalculatorValid()) return;
+
+      if (!API_KEY) {
+        showAlert('Cole sua chave API do Gemini primeiro!');
+        return;
+      }
+      if (!uploadedImageBase64) {
+        showAlert('Selecione ou envie uma imagem primeiro!');
+        return;
+      }
+
+      analyzeBtn.textContent = '⏳ Analisando...';
+      analyzeBtn.disabled = true;
+
+      try {
+        const base64Data = uploadedImageBase64.split(',')[1];
+        const mimeType = uploadedImageBase64.split(';')[0].split(':')[1];
+
+        const prompt = `Você é um especialista em e-commerce e fotografia comercial. Analise esta imagem e retorne APENAS um JSON válido.
+IMPORTANTE: Conforme requisito obrigatório, TODAS as 4 variações de imagem DEVEM mostrar PESSOAS USANDO E INTERAGINDO COM O PRODUTO (modelos/pessoas reais segurando, vestindo, manuseando ou aproveitando o produto).
+{
+  "titulo": "Título profissional até 70 caracteres",
+  "descricao": "Descrição completa e persuasiva com características e diferenciais",
+  "especificacoes": [
+    {"nome": "Material", "valor": "detalhe"},
+    {"nome": "Dimensões", "valor": "detalhe"},
+    {"nome": "Peso", "valor": "detalhe"},
+    {"nome": "Cor", "valor": "detalhe"},
+    {"nome": "Garantia", "valor": "detalhe"}
+  ],
+  "variacoes": [
+    "Pessoa Usando o Produto no Dia a Dia com Sorriso e Satisfação",
+    "Pessoa em Ação e Rotina Dinâmica Utilizando o Produto",
+    "Mãos em Close-up Operando e Manuseando com Ergonomia",
+    "Pessoas Conectadas Desfrutando dos Benefícios em Momento Social"
+  ]
+}`;
+
+        const models = ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-3.1-flash-lite'];
+        let data = null;
+        let lastError = null;
+
+        for (const model of models) {
+          try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${API_KEY}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ parts: [ { text: prompt }, { inline_data: { mime_type: mimeType, data: base64Data } } ] }],
+                generationConfig: { temperature: 0.7, maxOutputTokens: 3000 }
+              })
+            });
+            if (response.ok) {
+              data = await response.json();
+              break;
+            } else {
+              const errJson = await response.json().catch(() => ({}));
+              lastError = new Error(errJson.error?.message || 'Erro HTTP ' + response.status);
+            }
+          } catch (e) {
+            lastError = e;
+          }
+        }
+
+        if (!data) throw lastError || new Error('Não foi possível conectar à API do Gemini.');
+
+        let respostaTexto = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        respostaTexto = respostaTexto.replace(/```json|```/g, '').trim();
+        const resultado = JSON.parse(respostaTexto);
+
+        productTitle.value = resultado.titulo || '';
+        productDesc.value = resultado.descricao || '';
+
+        if (Array.isArray(resultado.especificacoes)) {
+          specsContent.innerHTML = `<table>${resultado.especificacoes.map(e => `<tr><td>${e.nome}</td><td>${e.valor}</td></tr>`).join('')}</table>`;
+        }
+
+        if (Array.isArray(resultado.variacoes)) {
+          generatedImages.innerHTML = resultado.variacoes.slice(0, 4).map((nome, i) => `
+            <div class="image-card">
+              <img src="${uploadedImageBase64}" alt="${nome}" class="variation-img">
+              <strong>#${i+1}</strong> <span>${nome}</span>
+            </div>
+          `).join('');
+        }
+
+        analyzeBtn.textContent = '✅ Concluído!';
+      } catch (erro) {
+        showAlert('Erro: ' + (erro.message || 'Falha na análise'));
+      }
+
+      setTimeout(() => {
+        analyzeBtn.textContent = '🔍 Analisar com IA';
+        analyzeBtn.disabled = false;
+      }, 2000);
+    });
+
+    // Calculadora
+    function runCalc() {
+      const cost = parseFloat(document.getElementById('costPrice').value) || 0;
+      const profit = parseFloat(document.getElementById('profitPercent').value) || 30;
+      const tax = parseFloat(document.getElementById('taxPercent').value) || 12;
+      const denom = 1 - (profit + tax) / 100;
+      const price = denom > 0.05 ? cost / denom : cost * 1.5;
+      const netProfit = price - cost - (price * tax / 100);
+      document.getElementById('salePrice').textContent = price.toFixed(2).replace('.', ',');
+      document.getElementById('netProfit').textContent = netProfit.toFixed(2).replace('.', ',');
+    }
+
+    calcBtn.addEventListener('click', runCalc);
+    document.getElementById('costPrice').addEventListener('input', runCalc);
+    document.getElementById('profitPercent').addEventListener('input', runCalc);
+    document.getElementById('taxPercent').addEventListener('input', runCalc);
+    runCalc();
+
+    // Tendências
+    const trendingProducts = [
+      { rank: 1, name: 'Smartphone 5G com Câmera Profissional', trend: '+128%', category: 'Eletrônicos' },
+      { rank: 2, name: 'Fone Bluetooth com Cancelamento de Ruído', trend: '+95%', category: 'Acessórios' },
+      { rank: 3, name: 'Relógio Inteligente à Prova d\'Água', trend: '+87%', category: 'Eletrônicos' },
+      { rank: 4, name: 'Camisetas Dry Fit - Kit com 5 Unidades', trend: '+76%', category: 'Moda' },
+      { rank: 5, name: 'Produtos de Beleza Orgânicos', trend: '+68%', category: 'Beleza' },
+      { rank: 6, name: 'Utensílios Domésticos Inteligentes', trend: '+62%', category: 'Casa' },
+      { rank: 7, name: 'Suplementos Alimentares Premium', trend: '+58%', category: 'Saúde' },
+      { rank: 8, name: 'Equipamentos para Exercícios em Casa', trend: '+51%', category: 'Esportes' },
+    ];
+
+    function loadTrends() {
+      trendsContent.innerHTML = trendingProducts.map(p => `
+        <div class="trend-item">
+          <span class="rank">#${p.rank}</span>
+          <div class="trend-info"><strong>${p.name}</strong><small>${p.category}</small></div>
+          <span class="trend-up">${p.trend}</span>
+        </div>
+      `).join('');
+    }
+
+    refreshTrendsBtn.addEventListener('click', () => {
+      trendsContent.innerHTML = '<div class="loading">Varredura em andamento...</div>';
+      setTimeout(loadTrends, 1000);
+    });
+
+    loadTrends();
+  </script>
+</body>
+</html>

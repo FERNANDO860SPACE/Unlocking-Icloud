@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "Produto IA — Gerador Completo",
+  "version": "2.0.0",
+  "description": "Lê imagem → gera título, descrição, imagens, especificações, calculadora + tendências.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://generativelanguage.googleapis.com/*"],
+  "action": {
+    "default_popup": "standalone.html"
+  }
+}
